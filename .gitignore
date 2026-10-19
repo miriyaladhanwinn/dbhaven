@@ -1,0 +1,27 @@
+# Binaries and build output
+/dbhaven
+/dbhaven.exe
+*.test
+*.out
+/dist/
+
+# Go workspace / module cache (project-local)
+/.gopath/
+
+# Test artifacts
+coverage.out
+coverage.html
+
+# Editor / OS
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Local secrets and runtime state
+*.key
+*.pem
+dbhaven.yaml
+!dbhaven.example.yaml

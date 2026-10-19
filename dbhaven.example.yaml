@@ -1,0 +1,52 @@
+# --- dbhaven example configuration -------------------------------------------
+# Copy to dbhaven.yaml and edit. Never commit real credentials.
+
+encryption:
+  # Where the AES-256-GCM key comes from. Pick exactly one.
+  # Generate one with: dbhaven keygen --out /etc/dbhaven/key
+  key_file: /etc/dbhaven/key
+  # key_env: DBHAVEN_KEY   # ...or read it from an environment variable
+
+jobs:
+  # Nightly Postgres backup -> local disk + S3, GFS retention.
+  - name: main-postgres
+    type: postgres                       # postgres | mysql | mariadb | mongo
+    dsn: "postgres://backup:REDACTED@db.internal:5432/app?sslmode=require"
+    schedule: "0 2 * * *"                # cron; omit to run manually only
+    destinations:
+      - type: local
+        path: /var/backups/dbhaven
+      - type: s3
+        endpoint: s3.amazonaws.com       # or your MinIO / R2 / GCS endpoint
+        bucket: dbhaven-backups
+        prefix: prod/                    # optional
+        region: us-east-1                # optional
+        access_key: AKIAIOSFODNN7EXAMPLE
+        secret_key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+        use_ssl: true                    # default true
+    retention:
+      daily: 7                           # keep one per day, last 7 days
+      weekly: 4                          # ...then one per week, 4 weeks
+      monthly: 6                         # ...then one per month, 6 months
+    # extra_args: ["--table=public.*"]   # passed straight to the dump tool
+
+  # MySQL backup, simple keep-last retention, manual runs only.
+  - name: legacy-mysql
+    type: mysql
+    dsn: "mysql://backup:REDACTED@db.internal:3306/legacy"
+    destinations:
+      - type: local
+        path: /var/backups/dbhaven
+    retention:
+      keep_last: 10
+
+  # MongoDB via mongodump --archive.
+  - name: analytics-mongo
+    type: mongo
+    dsn: "mongodb://backup:REDACTED@db.internal:27017/analytics"
+    schedule: "30 3 * * 0"               # Sundays at 03:30
+    destinations:
+      - type: local
+        path: /var/backups/dbhaven
+    retention:
+      keep_last: 8
