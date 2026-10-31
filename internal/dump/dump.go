@@ -36,6 +36,8 @@ func ForType(t string) (Dumper, error) {
 		return mysql{}, nil
 	case config.TypeMongo:
 		return mongo{}, nil
+	case config.TypeDb2:
+		return db2{}, nil
 	default:
 		return nil, fmt.Errorf("unsupported database type %q", t)
 	}

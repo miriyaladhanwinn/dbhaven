@@ -6,7 +6,7 @@ import (
 )
 
 func TestForType(t *testing.T) {
-	for _, typ := range []string{"postgres", "mysql", "mariadb", "mongo"} {
+	for _, typ := range []string{"postgres", "mysql", "mariadb", "mongo", "db2"} {
 		if _, err := ForType(typ); err != nil {
 			t.Fatalf("ForType(%q): %v", typ, err)
 		}
@@ -89,5 +89,23 @@ func TestMissingToolError(t *testing.T) {
 		t.Fatal("expected error for missing tool")
 	} else if !strings.Contains(err.Error(), "not found on PATH") {
 		t.Fatalf("error should name the missing tool: %v", err)
+	}
+}
+
+func TestDb2DumpArgs(t *testing.T) {
+	d, err := ForType("db2")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if d.ToolName() != "db2" {
+		t.Fatalf("expected tool 'db2', got %s", d.ToolName())
+	}
+	args, err := d.DumpArgs("db2://db2inst1:password@127.0.0.1:50000/sample", []string{"online"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	joined := strings.Join(args, " ")
+	if !strings.Contains(joined, "backup database sample online to -") {
+		t.Fatalf("unexpected db2 dump args: %s", joined)
 	}
 }

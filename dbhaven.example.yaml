@@ -10,7 +10,7 @@ encryption:
 jobs:
   # Nightly Postgres backup -> local disk + S3, GFS retention.
   - name: main-postgres
-    type: postgres                       # postgres | mysql | mariadb | mongo
+    type: postgres                       # postgres | mysql | mariadb | mongo | db2
     dsn: "postgres://backup:REDACTED@db.internal:5432/app?sslmode=require"
     schedule: "0 2 * * *"                # cron; omit to run manually only
     destinations:
@@ -50,3 +50,25 @@ jobs:
         path: /var/backups/dbhaven
     retention:
       keep_last: 8
+
+  # IBM Db2 enterprise database backup -> local + S3, online hot backup.
+  - name: enterprise-db2
+    type: db2
+    dsn: "db2://db2inst1:REDACTED@db2.internal:50000/SAMPLE"
+    schedule: "0 1 * * *"                # Nightly at 01:00
+    destinations:
+      - type: local
+        path: /var/backups/dbhaven/db2
+      - type: s3
+        endpoint: s3.amazonaws.com
+        bucket: dbhaven-db2-archives
+        prefix: enterprise/
+        region: us-east-1
+        access_key: AKIAIOSFODNN7EXAMPLE
+        secret_key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+        use_ssl: true
+    retention:
+      daily: 7
+      weekly: 4
+      monthly: 12
+    extra_args: ["online"]

@@ -16,6 +16,7 @@ const (
 	TypeMySQL    = "mysql"
 	TypeMariaDB  = "mariadb"
 	TypeMongo    = "mongo"
+	TypeDb2      = "db2"
 )
 
 // Supported destination types.
@@ -119,9 +120,9 @@ func (c *Config) Validate() error {
 		}
 		seen[j.Name] = true
 		switch j.Type {
-		case TypePostgres, TypeMySQL, TypeMariaDB, TypeMongo:
+		case TypePostgres, TypeMySQL, TypeMariaDB, TypeMongo, TypeDb2:
 		default:
-			return fmt.Errorf("job %q: unknown type %q (want postgres, mysql, mariadb or mongo)", j.Name, j.Type)
+			return fmt.Errorf("job %q: unknown type %q (want postgres, mysql, mariadb, mongo or db2)", j.Name, j.Type)
 		}
 		if strings.TrimSpace(j.DSN) == "" {
 			return fmt.Errorf("job %q: dsn is required", j.Name)

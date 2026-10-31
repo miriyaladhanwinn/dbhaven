@@ -10,7 +10,7 @@ or any S3-compatible storage, encrypt everything with AES-256-GCM, and prune
 with grandfather-father-son retention.
 
 Supported databases: **PostgreSQL** (`pg_dump`/`pg_restore`), **MySQL/MariaDB**
-(`mysqldump`/`mysql`), **MongoDB** (`mongodump`/`mongorestore`).
+(`mysqldump`/`mysql`), **MongoDB** (`mongodump`/`mongorestore`), and **IBM Db2** (`db2 backup`/`db2 restore`).
 
 ## Features
 
@@ -109,7 +109,8 @@ Notes:
 ┌─────────┐   ┌─────────┐   ┌──────────┐   ┌──────────────┐   ┌───────────┐
 │ pg_dump │──▶│ gzip*   │──▶│ AES-256  │──▶│ local disk / │──▶│ GFS prune │
 │mysqldump│   │(*except │   │ GCM      │   │ S3-compatible│   │ old files │
-│mongodump│   │ pg -Fc) │   │ (chunked)│   │ storage      │   │           │
+│mongodump│   │ pg/db2) │   │ (chunked)│   │ storage      │   │           │
+│db2backup│   │         │   │          │   │              │   │           │
 └─────────┘   └─────────┘   └──────────┘   └──────────────┘   └───────────┘
 ```
 
